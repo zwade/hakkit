@@ -1,0 +1,15 @@
+{
+  "name": "hakkit",
+  "version": "0.2.0",
+  "description": "Tools for doing security related tasks",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "deasync": "^0.1.4",
+    "ssh2": "^0.5.0"
+  }
+}
