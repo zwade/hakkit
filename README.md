@@ -5,11 +5,11 @@ HakKit is a collection of tools, similar in vein to [pwnlib](http://pwntools.rea
 Currently supported modules are:
 
  - Tubes
- ..- Command Tubes
- ..- Network Tubes
- ..- SSH Tubes
- ...- Shell
- ...- Commands
+  - Command Tubes
+  - Network Tubes
+  - SSH Tubes
+   - Shell
+   - Commands
 
 
 ## Tubes
