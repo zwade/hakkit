@@ -1,6 +1,6 @@
 module.exports = {
-	spawns: {
-		binary: require("./spawns/binarySpawn"),
+	spawn: {
+		cmd   : require("./spawns/binarySpawn"),
 		net   : require("./spawns/netSpawn"),
 		ssh   : require("./spawns/sshSpawn"),
 	},

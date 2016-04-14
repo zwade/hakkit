@@ -44,7 +44,7 @@ binary.prototype.spawn = function(stream) {
 			this.child.stdout.pipe(process.stdout)
 		}
 	}
-	if (this.fd === "stdout" || this.fd === 1) {
+	if (!this.fd || this.fd === "stdout" || this.fd === 1) {
 		this.child.stdout.pipe(this.stream)
 		if (!this.options.quiet) {
 			this.child.stderr.pipe(process.stderr)
