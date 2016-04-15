@@ -4,7 +4,6 @@ var netr = require("net")
 
 var net = function(addr, port) {
 
-	/* Pull Options as the last item and makes sure it's a strict object */
 	this.addr = addr
 	this.port = port
 }
