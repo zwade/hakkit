@@ -123,7 +123,7 @@ SSH credentials take the form of an object with a mandatory `user` field, and an
  - `creds` \<Credentials> The credentials to be used for authentication
  - `cmd` \<String> The command that should be run on the remote server
  - `args` \<String Array> (`[]`) An array of arguments to be passed to the command
- - `env` <\String> (Current Environment) An object consisting of the environment to run the command in
+ - `env` \<String> (Current Environment) An object consisting of the environment to run the command in
  - `Returns` \<Spawner> The newly created spawner
 
 `new hakkit.spawn.ssh.cmd(creds, cmd, args, env)` will create an SSH connection to `creds.host:creds.port` and run the command `cmd args` in the environment specified by `env`. Unlike with `hakkit.spawn.cmd`, both `STDOUT` and `STDIN` will be piped out of the tube.  
@@ -199,7 +199,7 @@ Which will open a prompt that allows you to run
 
 ```bash
 echo $BOO
-foo
+FOO
 ```
 
 ### hakkit.spawn.net
