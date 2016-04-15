@@ -2,14 +2,12 @@ var spawn = require("child_process").spawn
 var stream = require("stream")
 var util = require("util")
 
-var binary = function(cmd, args, fd, env, cwd) {
+var binary = function(cmd, args, fd, env, cwd, options) {
 
 	/* Pull Options as the last item and makes sure it's a strict object */
-	var options = arguments[arguments.length - 1] 
-	if (options instanceof Array) options = undefined
 	var options = (typeof options === "object") ? options : {}
 	options.cwd = cwd || options.cwd
-	options.env = env || options.env
+	options.env = env || options.env || undefined
 	
 	this.fd = fd
 
