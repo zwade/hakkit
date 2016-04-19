@@ -4,8 +4,8 @@ HakKit is a collection of tools, similar in vein to [pwnlib](http://pwntools.rea
 
 Currently supported modules are:
 
- - [Tubes](/tubes)
- - [Spawners](/spawners)
+ - [Tubes](http://zwade.github.io/tubes)
+ - [Spawners](http://zwade.github.io/spawners)
   - Command Spawners
   - Network Spawners
   - SSH Shell Spawners
