@@ -1,3 +1,8 @@
+---
+layout: index
+---
+
+
 ## Tubes
 
 Tubes are abstract types that take a `spawn` stream and expose methods for reading and writing data to them. 

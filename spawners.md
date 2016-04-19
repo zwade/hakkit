@@ -1,3 +1,8 @@
+---
+layout: index
+---
+
+
 ## Spawners
 
 Spawners are a type of stream that connects the input and output data for a stream and abstracts it to a common interfaces. Spawners are used by a tube to handle communications with other processes.
