@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>HakKit by zwade</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">HakKit</h1>
+      <h2 class="project-tagline">Down and Dirty Javascript</h2>
+      <a href="https://github.com/zwade/hakkit" class="btn">View on GitHub</a>
+      <a href="https://github.com/zwade/hakkit/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/zwade/hakkit/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <h1>
+<a id="hakkit" class="anchor" href="#hakkit" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>HakKit</h1>
+
+<p>HakKit is a collection of tools, similar in vein to <a href="http://pwntools.readthedocs.org/">pwnlib</a> that provides a number of resources for doing security and CTF tasks.</p>
+
+<p>Currently supported modules are:</p>
+
+<ul>
+<li>Tubes
+
+<ul>
+<li>Command Tubes</li>
+<li>Network Tubes</li>
+<li>SSH Tubes
+
+<ul>
+<li>Shell</li>
+<li>Commands</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+<h2>
+<a id="tubes" class="anchor" href="#tubes" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Tubes</h2>
+
+<p>Tubes are abstract types that take a <code>spawn</code> stream and expose methods for reading and writing data to them. </p>
+
+<h4>
+<a id="tube--new-hakkittube-spawner" class="anchor" href="#tube--new-hakkittube-spawner" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>tube = new hakkit.tube (spawner)</h4>
+
+<ul>
+<li>
+<code>spawner</code> &lt;spawn&gt; The spawner for this tube</li>
+<li>
+<code>Returns</code> &lt;tube&gt; The created and connected tube</li>
+</ul>
+
+<h4>
+<a id="tuberecv" class="anchor" href="#tuberecv" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>tube.recv()</h4>
+
+<ul>
+<li>
+<code>Returns</code> &lt;Buffer&gt; The received data</li>
+</ul>
+
+<p><code>tube.recv()</code> returns either everything stored in the receiving buffer or the next chunk of incoming data. This function <em>is</em> blocking.</p>
+
+<h4>
+<a id="tuberecvline" class="anchor" href="#tuberecvline" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>tube.recvline()</h4>
+
+<ul>
+<li>
+<code>Returns</code> &lt;Buffer&gt; The received data</li>
+</ul>
+
+<p><code>tube.recvline()</code> returns a single line of data from the tube, returning everything up to and including the first newline character ("\n"). This function <em>is</em> blocking.</p>
+
+<h4>
+<a id="tuberecvuntilrgx" class="anchor" href="#tuberecvuntilrgx" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>tube.recvuntil(rgx)</h4>
+
+<ul>
+<li>
+<code>rgx</code> &lt;RegExp&gt; The regular expression to match on</li>
+<li>
+<code>Returns</code> &lt;Buffer&gt; The received data</li>
+</ul>
+
+<p><code>tube.recvuntil(rgx)</code> returns all data up until and including data matched by the regular expression rgx. This function <em>is</em> blocking.</p>
+
+<h4>
+<a id="tubesenddata" class="anchor" href="#tubesenddata" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>tube.send(data)</h4>
+
+<ul>
+<li>
+<code>data</code> &lt;String | Buffer&gt; The data to be sent through the tube</li>
+<li>
+<code>Returns</code> &lt;undefined&gt;</li>
+</ul>
+
+<p><code>tube.send(data)</code> transmits <code>data</code> through the tube sending and flushing it without a newline at the end. Note that while data is sent, some spawners will not recognise it without a newline ("\n") character to flush it through.</p>
+
+<h4>
+<a id="tubesendlinedata" class="anchor" href="#tubesendlinedata" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>tube.sendline(data)</h4>
+
+<ul>
+<li>
+<code>data</code> &lt;String | Buffer&gt; The data to be sent through the tube</li>
+<li>
+<code>Returns</code> &lt;undefined&gt;</li>
+</ul>
+
+<p><code>tube.send(data)</code> transmits <code>data</code> through the tube with a newline ("\n") character at the end. This is helpful for spawners that expect an entire line to be passed (such as a spawned shell)</p>
+
+<h4>
+<a id="tubeinteractive" class="anchor" href="#tubeinteractive" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>tube.interactive()</h4>
+
+<ul>
+<li>
+<code>Returns</code> &lt;undefined&gt;</li>
+</ul>
+
+<p><code>tube.interactive</code> opens up a readline REPL for whatever the current spawner is. This will allow you to interact with the tube in real time. Note, <code>tube.interactive</code> currently does not work in the Node REPL (it cannot bind to <code>stdin</code>). This function <em>is</em> blocking.</p>
+
+<h4>
+<a id="tubeonevt-callback" class="anchor" href="#tubeonevt-callback" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>tube.on(evt, callback)</h4>
+
+<ul>
+<li>
+<code>evt</code> &lt;String&gt; Either "input" or "data"</li>
+<li>
+<code>callback</code> &lt;function&gt; The function to be called when the event occurs</li>
+<li>
+<code>Returns</code> &lt;undefined&gt;</li>
+</ul>
+
+<p><code>tube.on("input", function(length) {...})</code> will call callback with the parameter <code>length</code> representing how many bytes the input is requesting. Input data can either be returned from the function, or sent via <code>tube.sendline</code>. Returnsed data will not have a new line appended to it. This function <em>is not</em> blocking. </p>
+
+<p><code>tube.on("data", function(data) {...})</code> will call callback with the parameter <code>data</code> as a buffer representing the data transmitted out from the spawner. Since this is chunked data, there are no gauruntees made on the size of <code>data</code> or the conditions of it. This function <em>is not</em> blocking</p>
+
+<p>Note, once <code>tube.on</code> has a bound handler for <code>data</code>, the blocking methods will no longer be called. Calling <code>tube.on("data", false)</code> will reset this. </p>
+
+<h2>
+<a id="spawners" class="anchor" href="#spawners" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Spawners</h2>
+
+<p>Spawners are a type of stream that connects the input and output data for a stream and abstracts it to a common interfaces. Spawners are used by a tube to handle communications with other processes.</p>
+
+<h3>
+<a id="command-spawner" class="anchor" href="#command-spawner" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Command Spawner</h3>
+
+<p>A command spawner launches an application or binary program and binds itself to the output and input. </p>
+
+<h4>
+<a id="new-hakkitspawncmdcmd-args-fd-env-cwd-options" class="anchor" href="#new-hakkitspawncmdcmd-args-fd-env-cwd-options" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>new hakkit.spawn.cmd(cmd, &lt;args&gt;, &lt;fd&gt;, &lt;env&gt;, &lt;cwd&gt;, [options])</h4>
+
+<ul>
+<li>
+<code>cmd</code> &lt;String&gt;  The command to run. This is relative to the path node is being run from</li>
+<li>
+<code>args</code> &lt;String Array&gt; (<code>[]</code>) Arguments to be passed to the binary</li>
+<li>
+<code>fd</code> &lt;File Descriptor&gt; (<code>1 | "stdout"</code>) The file descriptor from which to read output. May be 1 ("stdout") or 2 ("stderr"). The non bound descriptor will be piped to system.stdout. </li>
+<li>
+<code>env</code> &lt;Object&gt; (Current Environment) The object representing the environment in which to run <code>cmd</code>
+</li>
+<li>
+<code>cwd</code> &lt;String&gt; (<code>"."</code>) The directory that <code>cmd</code> should be run from.</li>
+<li>
+<code>options</code> &lt;Object&gt; (<code>{}</code>) Any options to be passed to <code>child_process.exec</code>. Options can be passed in any index as long as it is the last argument</li>
+<li>
+<code>Returns</code> &lt;Spawner&gt; The newly created spawner</li>
+</ul>
+
+<p><code>new hakkit.spawn.cmd(cmd, args, fd, env, cwd, options)</code> will create a new process with the given options and pipe its output into a tube</p>
+
+<h3>
+<a id="network-spawner" class="anchor" href="#network-spawner" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Network Spawner</h3>
+
+<p>A network spawner connects to a remote TCP server and streams data between the server and the tube</p>
+
+<h4>
+<a id="new-hakkitspawnnetaddress-port" class="anchor" href="#new-hakkitspawnnetaddress-port" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>new hakkit.spawn.net(address, port)</h4>
+
+<ul>
+<li>
+<code>address</code> &lt;String&gt; The hostname of the remote server</li>
+<li>
+<code>port</code> &lt;int&gt; The value of the remote port</li>
+<li>
+<code>Returns</code> &lt;Spawner&gt; The newly created spawner</li>
+</ul>
+
+<p><code>new hakkit.spawn.net(address, port)</code> will create a new TCP connection to <code>address:port</code> and stream incoming and outgoing data through it</p>
+
+<h3>
+<a id="ssh-spawner" class="anchor" href="#ssh-spawner" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>SSH Spawner</h3>
+
+<p>An SSH spawner uses SSH to either connect a remote shell on a server, or to execute a binary on it</p>
+
+<h4>
+<a id="credentials-user-password-privatekey-host-port" class="anchor" href="#credentials-user-password-privatekey-host-port" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Credentials {user, &lt;password&gt;, &lt;privateKey&gt;, &lt;host&gt;, &lt;port&gt;}</h4>
+
+<ul>
+<li>
+<code>user</code> &lt;String&gt; The username to use when connecting</li>
+<li>
+<code>password</code> &lt;String&gt; The password to use when authenticating</li>
+<li>
+<code>privateKey</code> &lt;String&gt; The file path to the private key to use for authentication</li>
+<li>
+<code>host</code> &lt;String&gt; (<code>"127.0.0.1"</code>) The remote host to connect to</li>
+<li>
+<code>port</code> &lt;int&gt; (<code>22</code>) The remote port to connect to</li>
+</ul>
+
+<p>SSH credentials take the form of an object with a mandatory <code>user</code> field, and any of the other four options. If neither <code>password</code> nor <code>privateKey</code> are provided, then hakkit will prompt the user to input a password for authentication.</p>
+
+<h4>
+<a id="new-hakkitspawnsshcmdcreds-cmd-args-env" class="anchor" href="#new-hakkitspawnsshcmdcreds-cmd-args-env" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>new hakkit.spawn.ssh.cmd(creds, cmd, &lt;args&gt;, &lt;env&gt;)</h4>
+
+<ul>
+<li>
+<code>creds</code> &lt;Credentials&gt; The credentials to be used for authentication</li>
+<li>
+<code>cmd</code> &lt;String&gt; The command that should be run on the remote server</li>
+<li>
+<code>args</code> &lt;String Array&gt; (<code>[]</code>) An array of arguments to be passed to the command</li>
+<li>
+<code>env</code> &lt;String&gt; (Current Environment) An object consisting of the environment to run the command in</li>
+<li>
+<code>Returns</code> &lt;Spawner&gt; The newly created spawner</li>
+</ul>
+
+<p><code>new hakkit.spawn.ssh.cmd(creds, cmd, args, env)</code> will create an SSH connection to <code>creds.host:creds.port</code> and run the command <code>cmd args</code> in the environment specified by <code>env</code>. Unlike with <code>hakkit.spawn.cmd</code>, both <code>STDOUT</code> and <code>STDIN</code> will be piped out of the tube.  </p>
+
+<h4>
+<a id="new-hakkitspawnsshshellcreds" class="anchor" href="#new-hakkitspawnsshshellcreds" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>new hakkit.spawn.ssh.shell(creds)</h4>
+
+<ul>
+<li>
+<code>creds</code> &lt;Credentials&gt; The credentials to be used for authentication</li>
+<li>
+<code>Returns</code> &lt;Spawner&gt; The newly created spawner</li>
+</ul>
+
+<p><code>new hakkit.spawn.ssh.shell(creds)</code> will create an SSH connection to <code>creds.host:creds.port</code> and open a shell. This can be used for running multiple commands in succession. Note, all output from the shell will be piped through the tube, including all data presented in the new command prompt. As such, it is recommended to use <code>tube.recv()</code> to flush unwanted output before running a new command.  </p>
+
+<h1></h1>
+
+<h1>
+<a id="examples" class="anchor" href="#examples" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Examples</h1>
+
+<h2>
+<a id="tubes-and-spawners" class="anchor" href="#tubes-and-spawners" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Tubes and Spawners</h2>
+
+<p>Here are a few examples of how to use tubes and spawners together to provide easy interface with applications</p>
+
+<h3>
+<a id="hakkitspawncmd" class="anchor" href="#hakkitspawncmd" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>hakkit.spawn.cmd</h3>
+
+<div class="highlight highlight-source-js"><pre>s <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">hakkit.spawn</span>.<span class="pl-en">cmd</span>(<span class="pl-s"><span class="pl-pds">"</span>cat<span class="pl-pds">"</span></span>, [], <span class="pl-s"><span class="pl-pds">"</span>stdout<span class="pl-pds">"</span></span>)
+<span class="pl-k">var</span> tb <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">hakkit.tube</span>(s)
+
+count <span class="pl-k">=</span> <span class="pl-c1">0</span>
+<span class="pl-smi">tb</span>.<span class="pl-en">on</span>(<span class="pl-s"><span class="pl-pds">"</span>input<span class="pl-pds">"</span></span>, <span class="pl-k">function</span>() {
+    <span class="pl-k">if</span> (count <span class="pl-k">&lt;</span> <span class="pl-c1">5</span>) {
+        <span class="pl-smi">tb</span>.<span class="pl-smi">count</span><span class="pl-k">++</span>
+        <span class="pl-k">return</span> <span class="pl-s"><span class="pl-pds">`</span>Hello World <span class="pl-s1"><span class="pl-pse">${</span><span class="pl-smi">tb</span>.<span class="pl-smi">count</span><span class="pl-pse">}</span></span><span class="pl-pds">`</span></span> 
+    } <span class="pl-k">else</span> <span class="pl-k">if</span> (count <span class="pl-k">==</span> <span class="pl-c1">5</span>) {
+        <span class="pl-c1">setTimeout</span>(<span class="pl-k">function</span>() {
+            <span class="pl-smi">tb</span>.<span class="pl-en">sendline</span>(<span class="pl-s"><span class="pl-pds">"</span>Done!<span class="pl-pds">"</span></span>)
+            <span class="pl-smi">tb</span>.<span class="pl-c1">close</span>()
+        }, <span class="pl-c1">1000</span>)
+        count <span class="pl-k">++</span>
+    }
+})
+
+<span class="pl-en">console</span>.<span class="pl-c1">log</span>(<span class="pl-s"><span class="pl-pds">`</span>1. <span class="pl-s1"><span class="pl-pse">${</span><span class="pl-smi">tb</span>.<span class="pl-en">recvline</span>().<span class="pl-c1">toString</span>()<span class="pl-pse">}</span></span><span class="pl-pds">`</span></span>)
+<span class="pl-en">console</span>.<span class="pl-c1">log</span>(<span class="pl-s"><span class="pl-pds">`</span>2. <span class="pl-s1"><span class="pl-pse">${</span><span class="pl-smi">tb</span>.<span class="pl-en">recvuntil</span>(<span class="pl-sr"><span class="pl-pds">/</span><span class="pl-c1">[<span class="pl-c1">3-6</span>]</span><span class="pl-cce">\n</span><span class="pl-pds">/</span></span>).<span class="pl-c1">toString</span>()<span class="pl-pse">}</span></span><span class="pl-pds">`</span></span>)
+<span class="pl-smi">tb</span>.<span class="pl-en">sendline</span>(<span class="pl-s"><span class="pl-pds">"</span>Hiya!<span class="pl-pds">"</span></span>)
+<span class="pl-en">console</span>.<span class="pl-c1">log</span>(<span class="pl-s"><span class="pl-pds">`</span>3. <span class="pl-s1"><span class="pl-pse">${</span><span class="pl-smi">tb</span>.<span class="pl-en">recv</span>().<span class="pl-c1">toString</span>()<span class="pl-pse">}</span></span><span class="pl-pds">`</span></span>)
+<span class="pl-en">console</span>.<span class="pl-c1">log</span>(<span class="pl-s"><span class="pl-pds">`</span>4. <span class="pl-s1"><span class="pl-pse">${</span><span class="pl-smi">tb</span>.<span class="pl-en">recv</span>().<span class="pl-c1">toString</span>()<span class="pl-pse">}</span></span><span class="pl-pds">`</span></span>)
+<span class="pl-en">console</span>.<span class="pl-c1">log</span>(<span class="pl-s"><span class="pl-pds">`</span>5. <span class="pl-s1"><span class="pl-pse">${</span><span class="pl-smi">tb</span>.<span class="pl-en">recv</span>().<span class="pl-c1">toString</span>()<span class="pl-pse">}</span></span><span class="pl-pds">`</span></span>)</pre></div>
+
+<p>will output the following</p>
+
+<pre lang="text"><code>1. Hello World 1
+
+2. Hello World 2
+Hello World 3
+
+3. Hello World 4
+Hello World 5
+
+4. Hiya!
+
+5. Done!
+</code></pre>
+
+<p>Another example, using <code>tb.interactive</code></p>
+
+<div class="highlight highlight-source-js"><pre>s <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">hakkit.spawn</span>.<span class="pl-en">cmd</span>(<span class="pl-s"><span class="pl-pds">"</span>/bin/bash<span class="pl-pds">"</span></span>, [], <span class="pl-s"><span class="pl-pds">"</span>stdout<span class="pl-pds">"</span></span>, {BOO<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>FOO<span class="pl-pds">"</span></span>})
+<span class="pl-k">var</span> tb <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">hakkit.tube</span>(s)
+<span class="pl-smi">tb</span>.<span class="pl-en">interactive</span>()</pre></div>
+
+<p>Which will open a prompt that allows you to run</p>
+
+<div class="highlight highlight-source-shell"><pre><span class="pl-c1">echo</span> <span class="pl-smi">$BOO</span>
+FOO</pre></div>
+
+<h3>
+<a id="hakkitspawnnet" class="anchor" href="#hakkitspawnnet" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>hakkit.spawn.net</h3>
+
+<div class="highlight highlight-source-js"><pre>s <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">hakkit.spawn</span>.<span class="pl-en">net</span>(<span class="pl-s"><span class="pl-pds">"</span>dttw.tech<span class="pl-pds">"</span></span>, <span class="pl-c1">80</span>) 
+
+<span class="pl-k">var</span> tb <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">hakkit.tube</span>(s)
+
+<span class="pl-smi">tb</span>.<span class="pl-en">sendline</span>(<span class="pl-s"><span class="pl-pds">"</span>GET / HTTP/1.1<span class="pl-pds">"</span></span>)
+<span class="pl-smi">tb</span>.<span class="pl-en">sendline</span>(<span class="pl-s"><span class="pl-pds">"</span>Host: dttw.tech<span class="pl-pds">"</span></span>)
+<span class="pl-smi">tb</span>.<span class="pl-en">sendline</span>()
+
+<span class="pl-smi">tb</span>.<span class="pl-en">recvuntil</span>(<span class="pl-sr"><span class="pl-pds">/</span>Set-Cookie:<span class="pl-pds">/</span></span>)
+<span class="pl-en">console</span>.<span class="pl-c1">log</span>(<span class="pl-smi">tb</span>.<span class="pl-en">recvline</span>().<span class="pl-c1">toString</span>())
+
+<span class="pl-smi">tb</span>.<span class="pl-c1">close</span>()</pre></div>
+
+<p>will fetch the cookie header from an http request, printing out</p>
+
+<pre lang="text"><code>__cfduid=d52a14e65a3e064092b72565297ee1bbc1460755116; expires=Sat, 15-Apr-17 21:18:36 GMT; path=/; domain=.dttw.tech; HttpOnly
+</code></pre>
+
+<h3>
+<a id="hakkitspawnsshcmd" class="anchor" href="#hakkitspawnsshcmd" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>hakkit.spawn.ssh.cmd</h3>
+
+<div class="highlight highlight-source-js"><pre>s <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">hakkit.spawn</span>.<span class="pl-smi">ssh</span>.<span class="pl-en">cmd</span>( {host<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>unix.andrew.cmu.edu<span class="pl-pds">"</span></span>, user<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>zwade<span class="pl-pds">"</span></span> }, <span class="pl-s"><span class="pl-pds">"</span>cat<span class="pl-pds">"</span></span>, [<span class="pl-s"><span class="pl-pds">"</span>~/flag.txt<span class="pl-pds">"</span></span>])
+<span class="pl-k">var</span> tb <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">hakkit.tube</span>(s)
+<span class="pl-en">console</span>.<span class="pl-c1">log</span>(<span class="pl-smi">tb</span>.<span class="pl-en">recvline</span>().<span class="pl-c1">toString</span>())</pre></div>
+
+<p>will first prompt for a password and then print out the read file</p>
+
+<pre lang="text"><code>Password for zwade@unix.andrew.cmu.edu -
+**********
+flage{mush_flage_good_job}
+</code></pre>
+
+<h3>
+<a id="hakkitspawnsshshell" class="anchor" href="#hakkitspawnsshshell" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>hakkit.spawn.ssh.shell</h3>
+
+<div class="highlight highlight-source-js"><pre>s <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">hakkit.spawn</span>.<span class="pl-smi">ssh</span>.<span class="pl-en">shell</span>({user<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>zacharywade<span class="pl-pds">"</span></span>, privateKey<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>/Users/zacharywade/.ssh/id_rsa<span class="pl-pds">"</span></span>})
+<span class="pl-k">var</span> tb <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">hakkit.tube</span>(s)
+<span class="pl-smi">tb</span>.<span class="pl-en">interactive</span>()</pre></div>
+
+<p>will open a shell on the local machine allowing you to interact with it as</p>
+
+<div class="highlight highlight-source-shell"><pre><span class="pl-k">&gt;&gt;&gt;</span> whoami
+zacharywade</pre></div>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/zwade/hakkit">HakKit</a> is maintained by <a href="https://github.com/zwade">zwade</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+  
+  </body>
+</html>
