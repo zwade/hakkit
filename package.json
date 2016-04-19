@@ -1,15 +1,15 @@
 {
   "name": "hakkit",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Down and dirty javascript. Tools for aiding security related tasks",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": {
-  	"name": "Zachary Wade",
-	"email": "zach@dttw.tech",
-	"url": "dttw.tech"
+    "name": "Zachary Wade",
+    "email": "zach@dttw.tech",
+    "url": "dttw.tech"
   },
   "repository": "github:zwade/hakkit",
   "license": "ISC",
