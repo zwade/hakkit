@@ -101,7 +101,7 @@ tube.prototype.on = function(name, fn) {
 }
 
 tube.prototype.send = function(data) {
-	this.stream._s_write()
+	this.stream._s_write(data)
 }
 
 tube.prototype.sendline = function(data) {
