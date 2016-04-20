@@ -34,3 +34,6 @@ node_modules
 
 tests
 .DS_store
+
+.jekyll-metadata
+_site/
