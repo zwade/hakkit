@@ -2,6 +2,7 @@ var spawn = require("child_process").spawn
 var stream = require("stream")
 var util = require("util")
 var fs = require("fs")
+var deasync = require("deasync")
 
 var file = function(filepath, mode, enc) {
 	this.filepath = filepath
@@ -26,6 +27,7 @@ var file = function(filepath, mode, enc) {
 	}
 	
 	this.active = false
+	this.empty = false
 }
 
 file.prototype.name = function() {
@@ -35,7 +37,7 @@ file.prototype.name = function() {
 file.prototype.error = function() {
 	return (function(that) {
 		return function(err) {
-			if (that.options.quiet) return
+			if (that.options && that.options.quiet) return
 			console.error ("*---------- Error in " + that.name() + ": -----------*")
 			console.error (err)
 		}
@@ -48,9 +50,10 @@ file.prototype._createStream = function() {
 	
 	if (this.modes.indexOf("r") >= 0) {
 		this.readable = fs.createReadStream(this.filepath, {
-			flags: "r+",
+			flags: "r",
 			encoding: this.enc,
 		})
+		this.readable._h_readable = false
 	}
 
 	if (this.modes.indexOf("a") >= 0) {
@@ -58,12 +61,58 @@ file.prototype._createStream = function() {
 			flags: "a+",
 			encoding: this.enc,
 		})
-	} else if (this.modes.indexOf("w") >= 0) {
+	} else if (this.modes.indexOf("w") >= 0 && this.modes.indexOf("r") < 0) {
 		this.writable = fs.createWriteStream(this.filepath, {
 			flags: "w+",
 			encoding: this.enc,
 		})
 	}
+}
+
+file.prototype.read = function(i) {
+	if (this.modes.indexOf("r") < 0) return 
+	if (this.stream) return false
+	
+	var that = this
+
+	this._createStream()
+
+	var wait_read = function(cb) {
+		if (that.empty) {
+			cb(null, new Buffer(0))
+			return
+		}
+		var read = i
+		var readBuff = new Buffer(0)
+		var readHandle = function () {
+			var buff = that.readable.read(read)
+			while (buff != null) {
+				if (read != undefined && buff.length > read) {
+					that.error()("readable.read returned more data than requested. Some data may have been lost")
+					that.readable.removeListener("readable", readHandle)
+					cb()
+				}
+				if (read != undefined && buff.length == read) {
+					that.readable.removeListener("readable", readHandle) 
+					cb(null, Buffer.concat([readBuff, buff]))
+				} else {
+					readBuff = Buffer.concat([readBuff, buff])	
+				}
+				if (read) {
+					read -= buff.length
+				}
+				buff = that.readable.read(read)
+			}
+		}
+		that.readable.on("readable", readHandle) 
+		readHandle()
+		that.readable.on("end", function () {
+			that.empty = true
+			cb(null, readBuff)
+		})
+	}
+	return deasync(wait_read)()
+	
 }
 
 file.prototype.spawn = function(stream) {
