@@ -1,6 +1,6 @@
 {
   "name": "hakkit",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Down and dirty javascript. Tools for aiding security related tasks",
   "main": "index.js",
   "scripts": {
