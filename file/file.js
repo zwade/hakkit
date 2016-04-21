@@ -8,6 +8,7 @@ var file = function(filepath, mode, enc) {
 	this.filepath = filepath
 	this.enc = enc
 	this.modes = []
+	mode = mode || "r"
 	
 	for (var i = 0; i < mode.length; i++) {
 		switch (mode[i]) {
@@ -25,7 +26,7 @@ var file = function(filepath, mode, enc) {
 				break
 		}
 	}
-	
+
 	this.active = false
 	this.empty = false
 }
