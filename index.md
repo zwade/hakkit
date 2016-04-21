@@ -15,6 +15,7 @@ Currently supported modules are:
   - Network Spawners
   - SSH Shell Spawners
   - SSH Command Spawners
+ - [File](http://zwade.github.io/hakkit/file)
 
 Documentation is provided as well as numerous [examples](http://zwade.github.io/hakkit/examples). 
 
