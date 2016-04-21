@@ -117,4 +117,56 @@ will open a shell on the local machine allowing you to interact with it as
 >>> whoami
 zacharywade
 ```
+	
+### hakkit.file
 
+```js
+s = new hakkit.file("message.txt", "ra", "ascii")
+console.log("Signature: "+s.read(16+1)) 
+console.log("Message: "+s.read())
+s.write("Ok, it will be seen to shortly.")
+```
+
+```bash
+>>> cat > message.txt
+0123456789ABCDEF
+Please pick up more baking soda.
+```
+
+will read the full contents of the file, and then append a reply to it. Thus running it will produce
+
+```text
+Signature: 01234567890ABCDEF
+
+Message: Please pick up more baking soda
+```
+
+and 
+
+```bash
+>>> cat message.txt
+0123456789ABCDEF
+Please pick up more baking soda
+Ok, it will be seen to shortly
+```
+
+Alternatively, files may be used in conjunction with a tube, as such
+
+```js
+s = new hakkit.file("/usr/share/dict/web2")
+var tb = new hakkit.tube(s)
+console.log(tb.recvuntil(/aardvark\n/).toString())
+```
+
+will print out
+
+```text
+A
+a
+aa
+aal
+aalii
+aam
+Aani
+aardvark
+```
