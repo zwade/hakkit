@@ -51,7 +51,6 @@ file.prototype._createStream = function() {
 	if (this.modes.indexOf("r") >= 0) {
 		this.readable = fs.createReadStream(this.filepath, {
 			flags: "r",
-			encoding: this.enc,
 		})
 		this.readable._h_readable = false
 	}
@@ -59,18 +58,16 @@ file.prototype._createStream = function() {
 	if (this.modes.indexOf("a") >= 0) {
 		this.writable = fs.createWriteStream(this.filepath, {
 			flags: "a+",
-			encoding: this.enc,
 		})
 	} else if (this.modes.indexOf("w") >= 0 && this.modes.indexOf("r") < 0) {
 		this.writable = fs.createWriteStream(this.filepath, {
 			flags: "w+",
-			encoding: this.enc,
 		})
 	}
 }
 
 file.prototype.read = function(i) {
-	if (this.modes.indexOf("r") < 0) return 
+	if (this.modes.indexOf("r") < 0) return false
 	if (this.stream) return false
 	
 	var that = this
@@ -90,7 +87,7 @@ file.prototype.read = function(i) {
 				if (read != undefined && buff.length > read) {
 					that.error()("readable.read returned more data than requested. Some data may have been lost")
 					that.readable.removeListener("readable", readHandle)
-					cb()
+					cb(null, false)
 				}
 				if (read != undefined && buff.length == read) {
 					that.readable.removeListener("readable", readHandle) 
@@ -111,7 +108,39 @@ file.prototype.read = function(i) {
 			cb(null, readBuff)
 		})
 	}
-	return deasync(wait_read)()
+	var out = deasync(wait_read)()
+	if (this.enc) {
+		return out.toString(this.enc)
+	} else {
+		return out
+	}
+}
+
+file.prototype.write = function(data) {
+	if (this.modes.indexOf("w") < 0 &&
+	    this.modes.indexOf("a") < 0) return false
+	if (this.stream) return false
+
+	if (! (data instanceof Buffer)) {
+		if (typeof data == "string") {
+			if (!this.enc) {
+				data = Buffer.from(data, "utf8")
+			} else {
+				data = Buffer.from(data, this.enc)
+			}
+		} else {
+			data = new Buffer(data)
+		}
+	}
+
+	var that = this
+	this._createStream()
+
+	var write = function(cb) {
+		that.writable.write(data, that.enc, cb)
+	}
+
+	return deasync(write)()
 	
 }
 
