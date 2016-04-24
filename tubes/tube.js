@@ -78,12 +78,15 @@ tube.prototype._h_read = function(rgx, cb) {
 				var endidx = res.index + res[0].length
 				var outbuf = that.writebuff.slice(0,endidx)
 				that.writebuff = that.writebuff.slice(endidx)
-				cb (null,outbuf)
-
+				that._h_checkData = null
+				cb (null, outbuf)
+			} else {
+				that._h_checkData = getData
 			}
 		} else {
 			var outbuf = that.writebuff
 			that.writebuff = new Buffer(0)
+			that._h_checkData = null
 			cb(null,outbuf)
 		}
 	}
@@ -129,9 +132,11 @@ tube.prototype.recvuntil = function(rgx) {
 
 tube.prototype.recvline = function() {
 	var that = this
-	return deasync(function (cb) {
-		that._h_read(/\n/,cb)
+	var id = Math.random()
+	var out = deasync(function (cb) {
+		that._h_read(/\n/, cb)
 	})()
+	return out
 }
 
 tube.prototype.interactive = function() {
