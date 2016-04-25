@@ -1,3 +1,5 @@
+# This is still in development. Pushed versions are mostly stable, but the APIs are experimental and subject to change. Please use at your own risk
+
 # HakKit
 
 HakKit is a collection of tools, similar in vein to [pwnlib](http://pwntools.readthedocs.org/) that provides a number of resources for doing security and CTF tasks. In addition to providing security related tools, HakKit has a number of utilities that make it easier to write node scripts that interact with the outside world.
