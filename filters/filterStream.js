@@ -54,4 +54,15 @@ ioTransform.prototype.spawn = function(consumingStream) {
 	return this.consumingStream 
 }
 
+ioTransform.prototype.pop = function() {
+	return this.consumedStream
+}
+
+ioTransform.prototype.swap = function() {
+	var tmp = this.encoder
+	this.encoder = this.decoder
+	this.decoder = tmp
+	return this
+}
+
 module.exports = ioTransform

@@ -72,6 +72,10 @@ var tube = function(spawn) {
 	})
 }
 
+tube.prototype.pop = function () {
+	return this.spawn
+}
+
 tube.prototype._h_read = function(rgx, cb) {
 	var that = this
 	
