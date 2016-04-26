@@ -1,9 +1,10 @@
 var stream = require("stream")
 var util   = require("util")
 
-var coder = function(cfn) {
+var coder = function(cfn, scope) {
 	this.fn = cfn
 	stream.Transform.call(this)
+	this.scope = scope
 }
 
 util.inherits(coder, stream.Transform)
@@ -13,7 +14,7 @@ coder.prototype._transform = function(chunk, encoding, cb) {
 		throw Error("Filter passed data of type string, not buffer")
 		cb(-1)
 	}
-	var result = this.fn(chunk)
+	var result = this.fn.apply(this.scope, [chunk])
 	if (typeof chunk == "string") {
 		throw Error("Filter returns data of type string, not buffer")
 		cb(-1)
@@ -34,24 +35,21 @@ var ioTransform = function(consumedStream) {
 		this.encoder = this.decoder
 	}
 
-	this.encoderStream = new coder(this.encoder)
-	this.decoderStream = new coder(this.decoder)
+	this.encoderStream = new coder(this.encoder, this)
+	this.decoderStream = new coder(this.decoder, this)
 
 }
 
 ioTransform.prototype.spawn = function(consumingStream) {
 	this.consumingStream = consumingStream
 
-	this.consumingStream.pipe(this.encoderStream)
-	this.decoderStream.pipe(this.consumingStream)
+	this.consumingStream.out.pipe(this.encoderStream)
+	this.decoderStream.pipe(this.consumingStream.in)
 
-	this.combined = this.decoderStream
-	var that = this
-	this.combined.pipe = function(content) {
-		that.encoderStream.pipe(content)
-	}
-
-	this.consumedStream.spawn(this.combined)
+	this.consumedStream.spawn({
+		in: this.decoderStream,
+		out: this.encoderStream
+	})
 
 	return this.consumingStream 
 }

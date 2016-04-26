@@ -150,11 +150,11 @@ file.prototype.spawn = function(stream) {
 	this._createStream()
 
 	if (this.writable) {
-		this.stream.pipe(this.writable)
+		this.stream.out.pipe(this.writable)
 		this.writable.on("error", this.error())
 	}
 	if (this.readable) {
-		this.readable.pipe(this.stream)
+		this.readable.pipe(this.stream.in)
 		this.readable.on("error", this.error())
 	}
 

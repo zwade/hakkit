@@ -107,8 +107,8 @@ sshShell.prototype.spawn = function(stream) {
 		that.child.shell(cb)
 	})()
 
-	this.stream.pipe(this.shellStream)
-	this.shellStream.pipe(this.stream)
+	this.stream.out.pipe(this.shellStream)
+	this.shellStream.pipe(this.stream.in)
 
 	this.shellStream.on("error", this.error())
 
@@ -134,8 +134,8 @@ sshCmd.prototype.spawn = function(stream) {
 		that.child.exec(that.cmd + " " + that.args.join(" "), {env: that.env, pty: true}, cb)
 	})()
 
-	this.shellStream.pipe(this.stream)
-	this.stream.pipe(this.shellStream)
+	this.shellStream.pipe(this.stream.in)
+	this.stream.out.pipe(this.shellStream)
 
 	this.shellStream.on("error", this.error())
 

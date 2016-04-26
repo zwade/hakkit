@@ -42,7 +42,12 @@ bindStream.prototype._s_end = function() {
 
 var tube = function(spawn) {	
 	this.spawn = spawn
-	this.stream = this.spawn.spawn(new bindStream())
+	
+	this.stream = new bindStream()
+	this.spawn.spawn({
+		in: this.stream,
+		out: this.stream
+	})
 
 	this.writebuff = new Buffer(0)
 

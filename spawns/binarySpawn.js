@@ -34,16 +34,16 @@ binary.prototype.error = function() {
 binary.prototype.spawn = function(stream) {
 	this.stream = stream
 	this.child = spawn(this.cmd, this.args, this.options)
-	this.stream.pipe(this.child.stdin)
+	this.stream.out.pipe(this.child.stdin)
 	
 	if (this.fd === "stderr" || this.fd === 2) {
-		this.child.stderr.pipe(this.stream)
+		this.child.stderr.pipe(this.stream.in)
 		if (!this.options.quiet) {
 			this.child.stdout.pipe(process.stdout)
 		}
 	}
 	if (!this.fd || this.fd === "stdout" || this.fd === 1) {
-		this.child.stdout.pipe(this.stream)
+		this.child.stdout.pipe(this.stream.in)
 		if (!this.options.quiet) {
 			this.child.stderr.pipe(process.stderr)
 		}

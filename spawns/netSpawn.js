@@ -27,8 +27,8 @@ net.prototype.spawn = function(stream) {
 	this.stream = stream
 	this.child = netr.connect(this.port, this.addr) 
 
-	this.child.pipe(this.stream)
-	this.stream.pipe(this.child)
+	this.child.pipe(this.stream.in)
+	this.stream.out.pipe(this.child)
 
 	this.child.on("error", this.error())
 
