@@ -5,5 +5,9 @@ module.exports = {
 		ssh   : require("./spawns/sshSpawn"),
 	},
 	file: require("./file/file"),
-	tube: require("./tubes/tube")
+	tube: require("./tubes/tube"),
+	filter: {
+		grep: require("./filters/grep"),
+		hex: require("./filters/hexFilter"),
+	}
 }

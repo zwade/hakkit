@@ -37,7 +37,11 @@ hexStream.prototype.encoder = function(chunk) {
 		return chunk
 	}
 	var out = []
-	for (var i = 0; i < chunk.length; i++) {
+	if (this.rem) {
+		chunk = Buffer.concat([this.rem, chunk])
+		this.rem = new Buffer(0)
+	}
+	for (var i = 0; i < chunk.length-1; i++) {
 		var d1 = chunk[i]
 		var d2 = chunk[i+1]
 		var num = 0
@@ -51,6 +55,9 @@ hexStream.prototype.encoder = function(chunk) {
 
 		out.push((t1 << 4) + t2)
 		i++
+	}
+	if (i < chunk.length) {
+		this.rem = new Buffer([chunk[chunk.length - 1]])
 	}
 	return new Buffer(out)
 }
