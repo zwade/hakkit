@@ -62,6 +62,9 @@ ioTransform.prototype.swap = function() {
 	var tmp = this.encoder
 	this.encoder = this.decoder
 	this.decoder = tmp
+	var tmp = this.encoderStream
+	this.encoderStream = this.decoderStream
+	this.decoderStream = tmp
 	return this
 }
 
